@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Процес закупівлі - Інтерактивний гайд</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Helvetica Neue", sans-serif;
+      background: linear-gradient(135deg, #f5f5f5 0%, #ffffff 100%);
+      color: #2c2c2a;
+      line-height: 1.6;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      padding: 40px 30px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 2px solid #378ADD;
+      padding-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #042C53;
+      margin-bottom: 10px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: #888780;
+      font-style: italic;
+    }
+
+    .step-card {
+      background: white;
+      border: 1px solid #d3d1c7;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin-bottom: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .step-card:hover {
+      border-color: #888780;
+      background: #f9f9f7;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    }
+
+    .step-card.active {
+      border-color: #378ADD;
+      background: #e6f1fb;
+    }
+
+    .step-card.critical {
+      border: 2px solid #BA7517;
+      background: #faeeda;
+    }
+
+    .step-card.critical:hover {
+      box-shadow: 0 4px 8px rgba(186, 117, 23, 0.15);
+    }
+
+    .step-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-weight: 500;
+      font-size: 15px;
+      color: #2c2c2a;
+    }
+
+    .step-number {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: #378ADD;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .step-card.critical .step-number {
+      background: #BA7517;
+    }
+
+    .step-title {
+      flex: 1;
+    }
+
+    .step-toggle {
+      color: #888780;
+      font-size: 16px;
+      transition: transform 0.3s;
+    }
+
+    .step-card.active .step-toggle {
+      transform: rotate(180deg);
+    }
+
+    .step-content {
+      display: none;
+      margin-top: 16px;
+      padding-top: 16px;
+      border-top: 1px solid #d3d1c7;
+      font-size: 14px;
+      color: #5f5e5a;
+    }
+
+    .step-content.visible {
+      display: block;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .content-section {
+      margin-bottom: 14px;
+    }
+
+    .content-section-title {
+      font-weight: 600;
+      color: #2c2c2a;
+      margin-bottom: 8px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .content-list {
+      margin: 0;
+      padding-left: 20px;
+      list-style: disc;
+    }
+
+    .content-list li {
+      margin-bottom: 6px;
+      line-height: 1.5;
+    }
+
+    .content-list strong {
+      color: #2c2c2a;
+    }
+
+    ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+
+    ol li {
+      margin-bottom: 6px;
+    }
+
+    .badge {
+      padding: 10px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+
+    .badge-success {
+      background: #EAF3DE;
+      color: #27500A;
+    }
+
+    .badge-warning {
+      background: #FAEEDA;
+      color: #633806;
+    }
+
+    .badge-critical {
+      background: #FCEBEB;
+      color: #791F1F;
+      border-left: 3px solid #E24B4A;
+      padding-left: 11px;
+    }
+
+    .progress-divider {
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #d3d1c7, transparent);
+      margin: 24px 0;
+    }
+
+    .footer-tip {
+      margin-top: 30px;
+      padding: 16px 18px;
+      background: #E6F1FB;
+      border-radius: 8px;
+      border-left: 4px solid #378ADD;
+      font-size: 13px;
+      color: #0C447C;
+    }
+
+    .footer-tip strong {
+      color: #042C53;
+    }
+
+    @media (max-width: 600px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      h1 {
+        font-size: 22px;
+      }
+
+      .step-card {
+        padding: 12px 16px;
+      }
+
+      .step-header {
+        gap: 10px;
+      }
+    }
+
+    .print-info {
+      text-align: center;
+      font-size: 12px;
+      color: #888780;
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid #d3d1c7;
+    }
+
+    a {
+      color: #378ADD;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>📋 Процес закупівлі</h1>
+      <p class="subtitle">Крок за кроком до успішного проєкту — ви це точно зробите! 🚀</p>
+    </header>
+
+    <div class="step-card" onclick="toggleStep(this, 0)">
+      <div class="step-header">
+        <div class="step-number">1</div>
+        <span class="step-title">Підготовка</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-0">
+        <div class="content-section">
+          <div class="content-section-title">Що робити:</div>
+          <ul class="content-list">
+            <li>Переглянути весь бюджет проєкту</li>
+            <li>Розподілити закупівлю за компонентами</li>
+            <li>Структурувати за тематикою (будівельні матеріали, канцтовари, дидактичні матеріали)</li>
+            <li>Або за постачальником (ТОВ, ФОП)</li>
+          </ul>
+        </div>
+        <div class="badge badge-success">✓ Готово до наступного кроку</div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 1)">
+      <div class="step-header">
+        <div class="step-number">2</div>
+        <span class="step-title">Аналіз ринку</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-1">
+        <div class="content-section">
+          <div class="content-section-title">На що звертати увагу:</div>
+          <ul class="content-list">
+            <li>Чи справді це <strong>найменша ціна</strong>?</li>
+            <li>Чи гарантована <strong>висока якість</strong>?</li>
+            <li>Знайти оптимальне <strong>співвідношення ціна/якість</strong></li>
+            <li>Порівняти кілька варіантів перед вибором</li>
+          </ul>
+        </div>
+        <div class="badge badge-warning">⚠ Не просто беріть першу пропозицію!</div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 2)">
+      <div class="step-header">
+        <div class="step-number">3</div>
+        <span class="step-title">Перевірка постачальника</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-2">
+        <div class="content-section">
+          <div class="content-section-title">Обов'язково перевірте:</div>
+          <ul class="content-list">
+            <li><strong>Виписка з ЄДР</strong> — чи активна компанія, чи не припиняє діяльність</li>
+            <li><strong>Ліцензія</strong> — якщо це спеціальна техніка чи обладнання</li>
+            <li><strong>Гарантія</strong> — чи надає постачальник гарантійне обслуговування</li>
+            <li><strong>Доставка</strong> — які умови, в яких районах, за скільки днів</li>
+            <li><strong>Виготовлення</strong> — чи підходять вам часові рамки</li>
+          </ul>
+        </div>
+        <div class="badge badge-warning">⚠ Критичний крок! Не пропустіть перевірку</div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 3)">
+      <div class="step-header">
+        <div class="step-number">4</div>
+        <span class="step-title">Оформлення документів</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-3">
+        <div class="content-section">
+          <div class="content-section-title">Для товарів (матеріали, меблі, обладнання):</div>
+          <ul class="content-list">
+            <li>Видаткова накладна</li>
+            <li>Рахунок (інвойс)</li>
+            <li>Платіжна інструкція <strong>(у призначенні платежу обов'язково вкажіть "За підтримки DCA-NCA")</strong></li>
+            <li><strong>Якщо техніка/дорогоцінне обладнання:</strong> рекомендуємо укласти договір (це безпечніше)</li>
+          </ul>
+        </div>
+        <div class="content-section">
+          <div class="content-section-title">Для послуг/робіт:</div>
+          <ul class="content-list">
+            <li>Договір</li>
+            <li>Додаток № 1 — Специфікація (перелік послуг, їх опис)</li>
+            <li>Якщо послуга включає матеріали — додати розрахунки цих матеріалів</li>
+          </ul>
+        </div>
+        <div class="content-section">
+          <div class="content-section-title">Важливо!</div>
+          <p style="margin: 0; color: #633806;">Якщо розрахунки оформлені в <strong>Проєктно-кошторисну документацію (ПКД)</strong>, постачальник ПОВИНЕН надати детальний розрахунок витрачених матеріалів як Додаток до ПКД</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress-divider"></div>
+
+    <div class="step-card critical" onclick="toggleStep(this, 4)">
+      <div class="step-header">
+        <div class="step-number">⚡</div>
+        <span class="step-title">Погодження з координатором</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-4">
+        <div class="content-section">
+          <div class="content-section-title">Алгоритм:</div>
+          <ol>
+            <li>Зібрали всі документи? ✓</li>
+            <li>Обрали постачальника? ✓</li>
+            <li>Маєте договір/рахунок/специфікацію? ✓</li>
+            <li><strong>ЗВЕРТАЄТЕСЬ до вашого координатора</strong></li>
+            <li>Передаєте йому документи (email, telegram, drive — як вам зручно)</li>
+            <li><strong>ЧЕКАЄТЕ його "ТАК"</strong></li>
+          </ol>
+        </div>
+        <div class="badge badge-critical">
+          <strong>⚠ ОБОВ'ЯЗКОВО!</strong> Без погодження координатора закупівлю робити НЕМОЖНА! Це не формальність — це контроль якості та безпеки проєкту.
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 5)">
+      <div class="step-header">
+        <div class="step-number">6</div>
+        <span class="step-title">Проведення закупівлі</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-5">
+        <div class="content-section">
+          <div class="content-section-title">Що робити:</div>
+          <ul class="content-list">
+            <li>Отримали дозвіл від координатора — закупляєтесь!</li>
+            <li>Розраховуйтесь з постачальником за договором/рахунком</li>
+            <li>Переконайтесь, що всі умови доставки дотримані</li>
+            <li>Отримайте товари в повному обсязі</li>
+          </ul>
+        </div>
+        <div class="badge badge-success">✓ Товари в дорозі до вас</div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 6)">
+      <div class="step-header">
+        <div class="step-number">7</div>
+        <span class="step-title">Отримання & фото-підтвердження</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-6">
+        <div class="content-section">
+          <div class="content-section-title">Обов'язково зробіть фото:</div>
+          <ul class="content-list">
+            <li><strong>Фото 1:</strong> товари щойно отримані (розпаковані, видно що все є)</li>
+            <li><strong>Фото 2:</strong> товар у використанні або встановлений в місці призначення</li>
+            <li><strong>Для послуг:</strong> декілька фото за весь період надання послуг (дозволить відстежити процес)</li>
+          </ul>
+        </div>
+        <div class="content-section">
+          <div class="content-section-title">Деталі:</div>
+          <p style="margin: 0;">Детальніше про кількість фото та формат узгодіть із координатором</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="step-card" onclick="toggleStep(this, 7)">
+      <div class="step-header">
+        <div class="step-number">8</div>
+        <span class="step-title">Фінансовий звіт</span>
+        <div class="step-toggle">▼</div>
+      </div>
+      <div class="step-content" id="step-7">
+        <div class="content-section">
+          <div class="content-section-title">Що передати координатору:</div>
+          <ul class="content-list">
+            <li>Оригінальні фінансові документи (накладна, рахунок, платіжна інструкція)</li>
+            <li>Договір (якщо був укладений)</li>
+            <li>Всі фото-підтвердження отримання товарів/послуг</li>
+            <li>Специфікацію з розрахунками (якщо послуги)</li>
+          </ul>
+        </div>
+        <div class="badge badge-success">✓ Готово до звіту перед ГО "Молодь України" та DCA-NCA</div>
+      </div>
+    </div>
+
+    <div class="footer-tip">
+      <strong>💡 Порада:</strong> Натискайте на кожний крок, щоб побачити всі деталі. Зберіть цю сторінку в закладки або роздрукуйте (натисніть Ctrl+P або Cmd+P)!
+      <br><br>
+      <strong style="font-size: 14px;">✨ Дякуємо за ваш внесок у зміну громад!</strong> Те, що ви робите — це важлива й відповідальна праця. Кожна закупівля, кожен крок — це частина великої позитивної змони. 🌟
+    </div>
+
+    <div class="print-info">
+      Питання? Напишіть своєму координатору або керівникові проєкту
+    </div>
+  </div>
+
+  <script>
+    function toggleStep(card, stepIndex) {
+      const content = document.getElementById('step-' + stepIndex);
+      const isActive = content.classList.contains('visible');
+
+      document.querySelectorAll('.step-content').forEach(el => el.classList.remove('visible'));
+      document.querySelectorAll('.step-card').forEach(el => el.classList.remove('active'));
+
+      if (!isActive) {
+        content.classList.add('visible');
+        card.classList.add('active');
+      }
+    }
+  </script>
+</body>
+</html>
